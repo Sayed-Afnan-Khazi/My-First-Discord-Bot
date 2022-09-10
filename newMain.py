@@ -1,4 +1,5 @@
 # Discord bot
+import asyncio
 from discord.ext import commands
 import discord
 import os
@@ -22,7 +23,7 @@ intents = discord.Intents(
 )
 
 extensions = [
-    'ext.weather'
+    'ext.weather',
     'ext.hello'
 ]
 
@@ -38,6 +39,10 @@ class AshBot(commands.Bot):
     async def on_ready(self):
         # Logging in message
         print(f'We are logged in! \n {self.user} has connected to Discord!')
+
+    async def get_hooks(self):
+        for extension in extensions:
+            await self.load_extension(extension)
     
     async def on_message(self, message: discord.Message):
         # We don't want to reply
@@ -51,10 +56,22 @@ class AshBot(commands.Bot):
         await super().start(token = botToken, reconnect = True)
 
 
-if __name__ == "__main__":
-    myBot = AshBot()
-    # I tried myBot.start()
-    # and
-    # myBot.run(botToken)
+async def run_bot():
+    async with AshBot() as bot:
+        await bot.start()
+
+def start_bot():
+    asyncio.run(run_bot())
+
+if __name__ == '__main__':
+    start_bot()
+
+
+# if __name__ == "__main__":
+#     myBot = AshBot()
+#     # I tried 
+#     myBot.start()
+#     # and
+#     myBot.run(botToken)
         
         

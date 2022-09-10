@@ -7,11 +7,11 @@ class Conversation(commands.Cog):
         self.bot = bot
     
     @commands.command(name = "hello")
-    async def hello(ctx):
+    async def hello(self, ctx):
         await ctx.send("Hello back!")
 
     @commands.command(name = "hi")
-    async def hi(ctx):
+    async def hi(self, ctx):
         await ctx.send(f"Hello there, {ctx.author.mention}")
     
 async def setup(bot):

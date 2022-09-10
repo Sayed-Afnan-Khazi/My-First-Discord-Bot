@@ -15,7 +15,7 @@ class Weather(commands.Cog):
         self.bot = bot
 
     @commands.command(name = "weather")
-    async def weather(ctx, cityName):
+    async def weather(self, ctx, cityName):
 
         base_url = "http://api.openweathermap.org/data/2.5/weather?"
 
