@@ -40,13 +40,13 @@ class AshBot(commands.Bot):
         # Logging in message
         print(f'We are logged in! \n {self.user} has connected to Discord!')
 
-    async def get_hooks(self):
+    async def setup_hook(self):
         for extension in extensions:
             await self.load_extension(extension)
     
     async def on_message(self, message: discord.Message):
-        # We don't want to reply
-        if message.author == self.user:
+        # We don't want to reply to ourselves
+        if message.author.bot:
             return
         
         ctx = await self.get_context(message, cls = commands.Message)
