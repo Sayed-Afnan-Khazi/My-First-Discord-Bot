@@ -48,9 +48,12 @@ class AshBot(commands.Bot):
         # We don't want to reply to ourselves
         if message.author.bot:
             return
-        
+        print("Bro detected some message has been sent")
+        print(message.content)
+
         ctx = await self.get_context(message, cls = commands.Message)
-        await self.invoke(ctx)
+        if ctx.valid:
+            await self.invoke(ctx)
 
     async def start(self):
         await super().start(token = botToken, reconnect = True)
