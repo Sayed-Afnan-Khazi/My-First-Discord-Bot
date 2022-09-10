@@ -53,6 +53,8 @@ class AshBot(commands.Bot):
 
 if __name__ == "__main__":
     myBot = AshBot()
-    myBot.run(botToken)
+    # I tried myBot.start()
+    # and
+    # myBot.run(botToken)
         
         
