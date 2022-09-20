@@ -6,6 +6,7 @@ class VoiceManager(commands.Cog):
 
     def __init__(self,bot) -> None:
         self.bot = bot
+        self.generalList = []
 
     @commands.command(name="invoice")
     async def invoice(self, ctx):
@@ -16,9 +17,21 @@ class VoiceManager(commands.Cog):
             ctx.send(f"You are currently not in a voice/stage channel {ctx.author.mention}")
     
     @commands.Cog.listener()
-    async def on_voice_state_update(member, before, after):
-        print(member.name, before, after)
-        await member.edit(mute = True)
+    async def on_voice_state_update(self, member, before, after):
+        # print("Type is ",type(before.channel.name))
+        print("MEMBER:",member.name, "BEFORE:",before.channel, "AFTER:",after.channel)
+
+        
+        # Managing Joining and leaving
+        if after.channel.name == "General" and before.channel is None:
+            print("MUTED!!!!!!!!!!!")
+            self.generalList.append(member)
+            await member.edit(mute = True)
+        if before.channel.name == "General" and after.channel is None:
+            print("UNMUTED!!!!!!!!!!!")
+            self.generalList.remove(member)
+            await member.edit(mute = False)
+            
 
     
 
