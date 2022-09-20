@@ -24,7 +24,8 @@ intents = discord.Intents(
 
 extensions = [
     'ext.weather',
-    'ext.hello'
+    'ext.hello',
+    'ext.voicemanager',
 ]
 
 command_prefix = commands.when_mentioned_or('!')
@@ -51,7 +52,7 @@ class AshBot(commands.Bot):
         print("Bro detected some message has been sent")
         print(message.content)
 
-        ctx = await self.get_context(message, cls = commands.Message)
+        ctx = await self.get_context(message, cls = commands.Context)
         if ctx.valid:
             await self.invoke(ctx)
 
@@ -69,12 +70,5 @@ def start_bot():
 if __name__ == '__main__':
     start_bot()
 
-
-# if __name__ == "__main__":
-#     myBot = AshBot()
-#     # I tried 
-#     myBot.start()
-#     # and
-#     myBot.run(botToken)
         
         
