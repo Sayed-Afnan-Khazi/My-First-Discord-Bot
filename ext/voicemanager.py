@@ -18,19 +18,22 @@ class VoiceManager(commands.Cog):
     
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        # print("Type is ",type(before.channel.name))
         print("MEMBER:",member.name, "BEFORE:",before.channel, "AFTER:",after.channel)
+        
+        if after.channel.name == "General": # We can use a list of practice room channels here
+            self.generalList.append(member)
+        else:
+            self.generalList.remove(member)
+
+        print("GeneralList is:", self.generalList)
+
+
+        for x in self.generalList:
+            if x and not x.voice.mute:
+                x.edit(mute = True)
+
 
         
-        # Managing Joining and leaving
-        if after.channel.name == "General" and before.channel is None:
-            print("MUTED!!!!!!!!!!!")
-            self.generalList.append(member)
-            await member.edit(mute = True)
-        if before.channel.name == "General" and after.channel is None:
-            print("UNMUTED!!!!!!!!!!!")
-            self.generalList.remove(member)
-            await member.edit(mute = False)
             
 
     
