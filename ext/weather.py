@@ -21,8 +21,9 @@ class Weather(commands.Cog):
 
         complete_url = base_url + "appid=" + WEATHER_API_KEY + "&q=" + cityName
 
-        response = requests.get(complete_url)
-        x = response.json()
+        # response = requests.get(complete_url)
+        async with self.bot.session.get(complete_url) as response:
+            x = await response.json()
 
         if x["cod"] != "404": # Error code if city not found or something else happened
             y = x["main"]

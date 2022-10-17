@@ -5,6 +5,7 @@ import discord
 import os
 import requests
 import json
+import aiohttp
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -44,6 +45,8 @@ class AshBot(commands.Bot):
     async def setup_hook(self):
         for extension in extensions:
             await self.load_extension(extension)
+        # For aihttp's sessions
+        self.session = aiohttp.ClientSession()
     
     async def on_message(self, message: discord.Message):
         # We don't want to reply to ourselves
