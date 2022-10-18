@@ -27,6 +27,7 @@ extensions = [
     'ext.weather',
     'ext.hello',
     'ext.voicemanager',
+    'ext.modtools',
 ]
 
 command_prefix = commands.when_mentioned_or('!')
