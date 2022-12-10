@@ -35,12 +35,30 @@ class VoiceManager(commands.Cog):
         # Cases:
 
         if after.channel.name == "General": # We can use a list of practice room channels here
-            # Entering the vc -> mute
-            # Unless they have the mic
-            print("I should mute you now")
+            # Entering the vc -> make audience
+            # Unless they are a performer
+
+            print(member.roles)
+            # print(type(member.roles))
+            # print(member.roles[2])
+            isAudience = False
+            isPerformer = False
+            for role in member.roles:
+                print(role)
+                print(type(role))
+                # Note to self: this is a role object of it's own. Going to have to use an API function to check against this
+                # if 'Role id=1045963196881707009' in role: # Audience Role ID
+                #     isAudience = True
+                # if "Role id=1045963339634835507" in role: # Performer Role ID
+                #     isPerformer = True
+
+            print("DONE WITH FOR LOOP")
+            if not isAudience and not isPerformer:
+                print("NEITHER AUDIENCE NOR PERFORMER")
+                await member.add_role('Audience')
             
-            if self.micHolderID is None or self.micHolderID != member.id:
-                await member.edit(mute = True)
+
+            
             
 
             
@@ -60,29 +78,19 @@ class VoiceManager(commands.Cog):
 
        
         
-        else:
+        # else:
             # Case when someone joins or does something in any other vc
             # They shouldn't be muted.
 
-            await member.edit(mute = False)
+            # await member.edit(mute = False)
         
         
 
-        print("userList is:", self.userList)
+        # print("userList is:", self.userList)
     
     # @commands.command(name="getmic")
     # async def getmic(self, ctx, arg):
-    #     if not arg:
-    #         if not self.generalList[ctx.author.id]:
-    #             await ctx.send(f"You don't seem to be in a practice room, {ctx.author.mention}")
-    #         else:
-    #             if self.generalListMicTaken:
-    #                 await ctx.send(f"Looks like {self.generalListMicTakenMember.real.name} has the mic, please ask them for it :)")
-    #             else:
-    #                 self.generalList[ctx.author.id].hasMic = True
-    #                 self.generalListMicTaken = True
-    #                 await self.generalList[ctx.author.id].real.edit(mute = False)
-    #                 await ctx.send(f"You're on the mic {ctx.author.mention}!!")
+    #     if not arg
         
 
 
