@@ -1,4 +1,5 @@
 # Discord bot
+import logging
 import asyncio
 from discord.ext import commands
 import discord
@@ -65,6 +66,7 @@ class AshBot(commands.Bot):
 
 
 async def run_bot():
+    discord.utils.setup_logging()
     async with AshBot() as bot:
         await bot.start()
 
