@@ -2,12 +2,9 @@ import os
 from discord.ext import commands
 import discord
 
-# class BetterMember():
-#     '''Wrapper class around discordpy's member class'''
-#     def __init__(self, member, isModMuted):
-#         self.real = member
-#         self.isModMuted = isModMuted
-#         self.hasMic = False #Default
+
+AUDIENCE_ROLE_ID = 1045963196881707009 
+PERFORMER_ROLE_ID = 1045963339634835507
 
 
 class VoiceManager(commands.Cog):
@@ -38,72 +35,19 @@ class VoiceManager(commands.Cog):
             # Entering the vc -> make audience
             # Unless they are a performer
 
-            print(member.roles)
-            # print(type(member.roles))
-            # print(member.roles[2])
             isAudience = False
             isPerformer = False
-            for role in member.roles:
-                print(role)
-                print(type(role))
-                # Note to self: this is a role object of it's own. Going to have to use an API function to check against this
-                # if 'Role id=1045963196881707009' in role: # Audience Role ID
-                #     isAudience = True
-                # if "Role id=1045963339634835507" in role: # Performer Role ID
-                #     isPerformer = True
 
-            print("DONE WITH FOR LOOP")
+            for role in member.roles:
+                if role.id == AUDIENCE_ROLE_ID:
+                    isAudience = True
+                if role.id == PERFORMER_ROLE_ID:
+                    isPerformer = True
+
             if not isAudience and not isPerformer:
                 print("NEITHER AUDIENCE NOR PERFORMER")
-                await member.add_role('Audience')
-            
-
-            
-            
-
-            
-
-            
-        # elif   before.channel.name == "General":
-        #     # Micmember has left
-
-        #     # Reset mic
-
-
+                await member.add_role(AUDIENCE_ROLE_ID) # WHY DOES THIS NOT WORK
         
-
-        # elif before.channel.name == "General":
-
-        #     # Regular member/listener has left
-
-       
-        
-        # else:
-            # Case when someone joins or does something in any other vc
-            # They shouldn't be muted.
-
-            # await member.edit(mute = False)
-        
-        
-
-        # print("userList is:", self.userList)
-    
-    # @commands.command(name="getmic")
-    # async def getmic(self, ctx, arg):
-    #     if not arg
-        
-
-
-        
-                
-
-
-
-
-        
-            
-
-    
 
 async def setup(bot):
     await bot.add_cog(VoiceManager(bot))
