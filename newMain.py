@@ -33,12 +33,16 @@ extensions = [
 
 command_prefix = commands.when_mentioned_or('!')
 
+allowed_mentions = discord.AllowedMentions(roles=False, everyone=False, users=False)
+
 class AshBot(commands.Bot):
     def __init__(self):
         # Setting up the bot
         super().__init__(command_prefix=command_prefix,
                          intents=intents,
+                         allowed_mentions = allowed_mentions,
                         )
+        
     
     async def on_ready(self):
         # Logging in message

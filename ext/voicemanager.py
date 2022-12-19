@@ -12,7 +12,7 @@ class VoiceManager(commands.Cog):
 
     def __init__(self,bot) -> None:
         self.bot = bot
-        self.performer = None
+        self.performer = None # Stores the user ID of the performer
 
     @commands.command(name="invoice")
     async def invoice(self, ctx):
@@ -56,6 +56,7 @@ class VoiceManager(commands.Cog):
                 print("THE PERFORMER HAS LEFT.")
                 myRoleobj = discord.Object(id=PERFORMER_ROLE_ID)
                 await member.remove_roles(myRoleobj)
+                self.performer = None
                 print("REMOVED PERFORMANCE ROLE")
 
         elif after.channel.id == GENERAL_CHANNEL_ID:
@@ -83,7 +84,6 @@ class VoiceManager(commands.Cog):
             # Case 4:
             # Leaving the vc -> remove audience and performer
             # if they are a performer -> also reset performer
-            print("YIIIIIKEEEEeeeeeeeeees")
             isAudience = False
             isPerformer = False
 
@@ -103,7 +103,30 @@ class VoiceManager(commands.Cog):
                 print("THE PERFORMER HAS LEFT.")
                 myRoleobj = discord.Object(id=PERFORMER_ROLE_ID)
                 await member.remove_roles(myRoleobj)
+                self.performer = None
                 print("REMOVED PERFORMANCE ROLE")
+
+    @commands.command(name="getperformer")
+    async def getperformer(self,ctx):
+        # Checking if they are in the vc
+        if ctx.author.voice.channel:
+            if ctx.author.voice.channel.id == GENERAL_CHANNEL_ID:
+                if self.performer is None:
+                    # Adding the performer role
+                    myRoleobj = discord.Object(id=PERFORMER_ROLE_ID)
+                    self.performer = ctx.author.id
+                    await ctx.author.add_roles(myRoleobj)
+                    print("ADDED PERFORMER ROLE.")
+                    # Removing the pre-added audience role
+                    myRoleobj = discord.Object(id=AUDIENCE_ROLE_ID)
+                    await ctx.author.remove_roles(myRoleobj)
+                    print("REMOVED AUDIENCE ROLE")
+                else:
+                    await ctx.send(f"Sorry, the role is taken for this channel by <@{self.performer}>. To reset the role, please ask them to leave the channel.")
+        else:
+            # This doesn't work.
+            await ctx.send("You are not in the voice channel.")
+
 
 async def setup(bot):
     await bot.add_cog(VoiceManager(bot))
