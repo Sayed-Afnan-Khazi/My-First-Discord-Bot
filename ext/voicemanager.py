@@ -8,6 +8,7 @@ PERFORMER_ROLE_ID = 1045963339634835507
 GENERAL_CHANNEL_ID = 1012056614238441605
 
 # What happens if the bot shuts down??
+# Multiple voice channels?? Idea: self.performer as a dictionary with channel ID as keys, channel checking as a list
 class VoiceManager(commands.Cog):
 
     def __init__(self,bot) -> None:
@@ -109,7 +110,7 @@ class VoiceManager(commands.Cog):
     @commands.command(name="getperformer")
     async def getperformer(self,ctx):
         # Checking if they are in the vc
-        if ctx.author.voice.channel:
+        if ctx.author.voice:
             if ctx.author.voice.channel.id == GENERAL_CHANNEL_ID:
                 if self.performer is None:
                     # Adding the performer role
@@ -125,6 +126,26 @@ class VoiceManager(commands.Cog):
                     await ctx.send(f"Sorry, the role is taken for this channel by <@{self.performer}>. To reset the role, please ask them to leave the channel.")
         else:
             # This doesn't work.
+            await ctx.send("You are not in the voice channel.")
+
+    @commands.command(name="resetperformer")
+    async def resetperformer(self,ctx):
+        # Checking if they are in the vc
+        if ctx.author.voice:
+            if ctx.author.voice.channel.id == GENERAL_CHANNEL_ID:
+                if self.performer is None:
+                    await ctx.send("There is no performer to reset.")
+                else:
+                    # Removing the performer role
+                    myRoleobj = discord.Object(id=PERFORMER_ROLE_ID)
+                    await ctx.author.remove_roles(myRoleobj)
+                    print("REMOVED PERFORMER ROLE.")
+                    # Adding the pre-added audience role
+                    myRoleobj = discord.Object(id=AUDIENCE_ROLE_ID)
+                    await ctx.author.add_roles(myRoleobj)
+                    print("ADDED AUDIENCE ROLE")
+                    self.performer = None
+        else:
             await ctx.send("You are not in the voice channel.")
 
 
