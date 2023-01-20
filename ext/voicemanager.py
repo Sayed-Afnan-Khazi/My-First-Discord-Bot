@@ -6,6 +6,7 @@ AUDIENCE_ROLE_ID = 1045963196881707009
 PERFORMER_ROLE_ID = 1045963339634835507
 GENERAL_CHANNEL_ID = 1012056614238441605
 FESTIVAL_CHANNEL_ID = 1054704196206727261
+VC_LOGS_CHANNEL_ID = 1066056878242680935
 
 # What happens if the bot shuts down??
 # Multiple voice channels?? Idea: self.performer as a dictionary with channel ID as keys, channel checking as a list
@@ -27,8 +28,33 @@ class VoiceManager(commands.Cog):
     
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        print("MEMBER:",member.name, "BEFORE:",before.channel, "AFTER:",after.channel)
+        ## This function contains two parts:
+        # 1. Logging the voice state changes
+        # 2. Managing the performer and audience roles
 
+        ## Part 1: Sending info to the logs channel
+
+        logs_channel = self.bot.get_channel(VC_LOGS_CHANNEL_ID) # Is this inefficient? Getting the channel every time?
+        utc_time_now = discord.utils.utcnow()
+        the_time_now = discord.utils.format_dt(utc_time_now, style='T') # Formatting the datetime
+        if after.channel and before.channel:
+            # Avoiding mute/unmute/deafen/undeafen stuff
+            if before.channel.id == after.channel.id:
+                return
+            # Moving between channels
+            send_msg = f"[{the_time_now}] {member.mention} has moved from {before.channel.mention} to {after.channel.mention}"
+            await logs_channel.send(send_msg)
+        elif after.channel is None and before.channel:
+            # Leaving the vc
+            send_msg = f"[{the_time_now}] {member.mention} has left {before.channel.mention}"
+            await logs_channel.send(send_msg)
+        elif after.channel:
+            # Joining the vc
+            send_msg = f"[{the_time_now}] {member.mention} has joined {after.channel.mention}"
+            await logs_channel.send(send_msg)
+        
+
+        ## Part 2: Performer and audience roles management:
 
         # Cases:
         # 1. You are joining the vc from outside
