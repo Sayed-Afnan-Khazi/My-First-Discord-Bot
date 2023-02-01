@@ -9,7 +9,16 @@ class admin(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
 
-    @commands.command(name='reload')
+    @commands.command(name='syncglobal')
+    @commands.is_owner()
+    async def sync_global(self, ctx: commands.Context):
+        '''Syncs the (slash) commands globally'''
+
+        commands = await self.bot.tree.sync(guild=None)
+        await ctx.send(f'Successfully synced {len(commands)} commands.')
+    
+
+    @commands.hybrid_command(name='reload')
     @commands.is_owner()
     async def reload(self, ctx, cog):
         '''Reloads the specified cog or all cogs if cogs="all".'''
