@@ -1,13 +1,18 @@
 # Discord bot
-
+import logging
+import asyncio
+from discord.ext import commands
 import discord
 import os
 import requests
 import json
+import aiohttp
 from dotenv import load_dotenv
 load_dotenv()
 
+# Getting the API keys
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+botToken = os.getenv("TOKEN")
 
 intents = discord.Intents(
     guilds=True,
@@ -20,58 +25,67 @@ intents = discord.Intents(
     message_content=True,
 )
 
-client = discord.Client(intents=intents)
+extensions = [
+    'ext.weather',
+    'ext.hello',
+    'ext.voicemanager',
+    'ext.modtools',
+    'ext.voicelogger',
+]
 
-@client.event
-async def on_ready():
-    print(f'We are logged in! \n {client.user} has connected to Discord!')
+command_prefix = commands.when_mentioned_or('!')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        print("Message author is of the type:",type(message.author))
-        return
-    # # elif 
-    # print(message.content.startswith('sa'))
-    # print("Message content:",message.content)
-    # print("Message itself:",message)
-    # print(message.content.split()[1])
-    if message.content.startswith("!"): #message.content.startswith("$")
-        print("Sending a message!")
-        if message.content.startswith("!hello"):
-            await message.channel.send("Hello back!")
-            print("Message sent")
-        elif message.content.startswith("!hi"):
-            await message.channel.send(f"Hello there, {message.author.mention}")
-            print("Message sent")
-        elif message.content.startswith("!weather"):
-            cityName = message.content.split()[1]
-            base_url = "http://api.openweathermap.org/data/2.5/weather?"
+# Making ghost-like pings (Ping you but don't send a notification)
+allowed_mentions = discord.AllowedMentions(roles=False, everyone=False, users=False)
 
-            complete_url = base_url + "appid=" + WEATHER_API_KEY + "&q=" + cityName
-
-            response = requests.get(complete_url)
-            x = response.json()
-
-            if x["cod"] != "404": # Error code if city not found or something else happened
-                y = x["main"]
-                current_temperature = y["temp"]
-                current_pressure = y["pressure"]
-                current_humidity = y["humidity"]
-                weatherObj = x["weather"]
-                weather_description = weatherObj[0]["description"]
-                # Subtract 273 because API returns kelvin. Here we return celcius.
-                reply = " ``` Temperature = " + str(current_temperature -273) + "\n atmospheric pressure (in hPa unit) = " + str(current_pressure) + "\n humidity (in percentage) = " + str(current_humidity) + "\n description = " + str(weather_description) + "```"
-
-                await message.channel.send(reply)
-            else:
-                reply = "We searched far and wide, but couldn't find this city. Please check your spellings and try again :smiley:"
-                await message.channel.send(reply)
-
-
+class AshBot(commands.Bot):
+    def __init__(self):
+        # Setting up the bot
+        super().__init__(command_prefix=command_prefix,
+                         intents=intents,
+                         allowed_mentions = allowed_mentions,
+                        )
         
+    
+    async def on_ready(self):
+        # Logging in message
+        print(f'We are logged in! \n {self.user} has connected to Discord!')
 
+    async def setup_hook(self):
+        for extension in extensions:
+            await self.load_extension(extension)
+        # For aihttp's sessions
+        self.session = aiohttp.ClientSession()
+    
+    async def on_message(self, message: discord.Message):
+        # We don't want to reply to ourselves
+        if message.author.bot:
+            return
+        
+        # For DEBUG purposes
+        print("AshBot detected the following message:")
+        print("*"*5)
+        print(message.content)
+        print("*"*5)
+
+        ctx = await self.get_context(message, cls = commands.Context)
+        if ctx.valid:
+            await self.invoke(ctx)
+
+    async def start(self):
+        await super().start(token = botToken, reconnect = True)
+
+
+async def run_bot():
+    discord.utils.setup_logging()
+    async with AshBot() as bot:
+        await bot.start()
+
+def start_bot():
+    asyncio.run(run_bot())
 
 if __name__ == '__main__':
-    botToken = os.getenv("TOKEN")
-    client.run(botToken)
+    start_bot()
+
+        
+        

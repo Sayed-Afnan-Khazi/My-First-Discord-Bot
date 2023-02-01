@@ -2,19 +2,21 @@ import os
 from discord.ext import commands
 import discord
 
+'''Handles the performer and audience roles for selected voice channels'''
+
 AUDIENCE_ROLE_ID = 1045963196881707009 
 PERFORMER_ROLE_ID = 1045963339634835507
 GENERAL_CHANNEL_ID = 1012056614238441605
 FESTIVAL_CHANNEL_ID = 1054704196206727261
-VC_LOGS_CHANNEL_ID = 1066056878242680935
 
 # What happens if the bot shuts down??
-# Multiple voice channels?? Idea: self.performer as a dictionary with channel ID as keys, channel checking as a list
+
 class VoiceManager(commands.Cog):
 
     def __init__(self,bot) -> None:
         self.bot = bot
         self.channels = [GENERAL_CHANNEL_ID, FESTIVAL_CHANNEL_ID]
+        # For Multiple voice channels?? - self.performer as a dictionary with channel ID as keys, channel checking as a list
         self.performer = {GENERAL_CHANNEL_ID:None,
                         FESTIVAL_CHANNEL_ID:None} # Stores the channel ID:user ID of the performer
 
@@ -28,33 +30,9 @@ class VoiceManager(commands.Cog):
     
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        ## This function contains two parts:
-        # 1. Logging the voice state changes
-        # 2. Managing the performer and audience roles
+        # Note: VC Logger has been moved to voicelogger.py
 
-        ## Part 1: Sending info to the logs channel
-
-        logs_channel = self.bot.get_channel(VC_LOGS_CHANNEL_ID) # Is this inefficient? Getting the channel every time?
-        utc_time_now = discord.utils.utcnow()
-        the_time_now = discord.utils.format_dt(utc_time_now, style='T') # Formatting the datetime
-        if after.channel and before.channel:
-            # Avoiding mute/unmute/deafen/undeafen stuff
-            if before.channel.id == after.channel.id:
-                return
-            # Moving between channels
-            send_msg = f"[{the_time_now}] {member.mention} has moved from {before.channel.mention} to {after.channel.mention}"
-            await logs_channel.send(send_msg)
-        elif after.channel is None and before.channel:
-            # Leaving the vc
-            send_msg = f"[{the_time_now}] {member.mention} has left {before.channel.mention}"
-            await logs_channel.send(send_msg)
-        elif after.channel:
-            # Joining the vc
-            send_msg = f"[{the_time_now}] {member.mention} has joined {after.channel.mention}"
-            await logs_channel.send(send_msg)
-        
-
-        ## Part 2: Performer and audience roles management:
+        ## Performer and audience roles management:
 
         # Cases:
         # 1. You are joining the vc from outside
