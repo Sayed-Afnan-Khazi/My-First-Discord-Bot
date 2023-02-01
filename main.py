@@ -31,11 +31,12 @@ extensions = [
     'ext.voicemanager',
     'ext.modtools',
     'ext.voicelogger',
+    'ext.admin',
 ]
 
 command_prefix = commands.when_mentioned_or('!')
 
-# Making ghost-like pings (Ping you but don't send a notification)
+# Making ghost-like pings (Pings you but doesn't send a notification)
 allowed_mentions = discord.AllowedMentions(roles=False, everyone=False, users=False)
 
 class AshBot(commands.Bot):
